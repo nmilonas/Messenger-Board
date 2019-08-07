@@ -12,30 +12,51 @@ let badPpl = new Map;
 const TOOMANYSWEARS = 3;
 
 app.use(cors());
+let msgString = [];
+let globalCount = 1;
 
 
 //Routes
 app.get('/messages', (req, res) => {
-    let id = Number(req.query.id)
-    if (isNaN(id)){
+    //     let id = Number(req.query.id)
+    //     if (isNaN(id)){
+    //         res.status(400);
+    //         res.send('Invalid input');
+    //         return;
+    //     }
+    //     let found = Msg.find((entry) => entry.id === id)
+    //     if(found == null){
+    //         res.status(404);
+    //         res.send('Not found');
+    //         return;
+    //     }
+    //    let value = JSON.stringify(found);
+    //    console.log(value)
+    //    res.status(200);
+    //    res.send(value);
+        //console.log(Msg.length)
+        if(Msg.length == 0){
+            res.status(200);
+            res.send(Msg);
+        }else{
+            
+            for(i of Msg){
+                console.log(Msg)
+                let name = i.user;
+                let content = i.content;
+                let temp = (" User " + name + " says "  + content + "");
+                res.write(temp.toString())
+            }
+            //console.log(msgString);
+            res.status(200);
+            res.send();
+     }
+    });
+app.post('/messages', (req, res) => {
+    if(req.body.user == "" || req.body.user == null ){
         res.status(400);
         res.send('Invalid input');
-        return;
-    }
-    let found = Msg.find((entry) => entry.id === id)
-    if(found == null){
-        res.status(404);
-        res.send('Not found');
-        return;
-    }
-   let value = JSON.stringify(found);
-   console.log(value)
-   res.status(200);
-   res.send(value);
-});
-
-app.post('/messages', (req, res) => {
-    if(req.body.user == null ||req.body.content == null ){
+    }else if(req.body.content == "" || req.body.content == null ){
         res.status(400);
         res.send('Invalid input');
     }else{
@@ -45,18 +66,19 @@ app.post('/messages', (req, res) => {
             let tempCount = 0;
             for(it of Msg){
                 if(it.user == user){
-                    //console.log(Msg.splice(tempCount,1),"HerE");
                     Msg.splice(tempCount,1);
+                }else{
+                    tempCount++;
                 }
-                tempCount++;
             }
-            console.log(Msg);
+            //console.log(Msg);
             res.status(403);
             res.send('Permission Denied');
             return;    
         }
         let content = req.body.content;
         let count = 0;
+        //console.log(content)
         let badWords = content.split(" "); 
         for( i in badWords){
             if(dictionary.has(badWords[i].toLowerCase())){     //make sure user doesn't use Caps to get around the dictionary
@@ -77,7 +99,7 @@ app.post('/messages', (req, res) => {
                 user:user,
                 content:content   
             });
-            //console.log(Msg);
+            globalCount++;
             identifier++;
         }else{
             console.log('Sorry ' + user + ' this message is too offensive to be sent')
@@ -90,5 +112,6 @@ app.post('/messages', (req, res) => {
     }     
 });
 
+    
 //Listen
 app.listen(3001, () => console.log('listening on port *:3001'));
