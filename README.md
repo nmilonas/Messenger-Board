@@ -1,5 +1,5 @@
 # Messenger-Board
-to start the client server  run "npm install" followed by "npm start" (within Messager-Board/CLient/messengerboard)
+to start the client server  run "npm install" followed by "npm start" (within Messager-Board/Client/messengerboard)
 to start backend server run "node index.js" (within Messenger-Board/Server)
 
 
