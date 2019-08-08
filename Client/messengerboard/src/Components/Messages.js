@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 
+//Set a default URL for more general use
 axios.defaults.baseURL = "http://" + window.location.hostname + ":3001";
 
 export default class MessageSend extends React.Component {
@@ -10,7 +11,7 @@ export default class MessageSend extends React.Component {
     messages: [],
     error: ""
   };
-
+  //Render the contents of the server without a request
   constructor() {
     super();
     this.init();
@@ -24,7 +25,7 @@ export default class MessageSend extends React.Component {
     const messages = recieved.data;
     this.setState({ messages });
   }
-
+  //Handle content being inputted in form fields
   handleNameChange = event => {
     this.setState({ name: event.target.value });
   };
@@ -33,13 +34,16 @@ export default class MessageSend extends React.Component {
   };
 
   handleSubmit = async event => {
+    //Delete old error log upon new entry
     this.setState({ error: null });
 
     event.preventDefault();
 
     let user = this.state.name;
-
     let content = this.state.content;
+
+    //Post request contains a user name and a content field
+    //Try to post a request, if it fails handle the error so the user can see why their input failed
     try {
       await axios({
         method: "post",
@@ -50,10 +54,9 @@ export default class MessageSend extends React.Component {
         }
       });
     } catch (error) {
-      this.setState({ error: error.response.data });
-      console.log(error);
+      this.setState({ error: error.response.data }); //Catch error specifics
     }
-
+    //Get request
     let recieved = await axios({
       method: "get",
       url: "/messages"
@@ -61,6 +64,7 @@ export default class MessageSend extends React.Component {
     const messages = recieved.data;
     this.setState({ messages });
 
+    //After a message is sent clear the input boxes
     this.setState({ name: "" });
     this.setState({ content: "" });
   };
@@ -72,27 +76,28 @@ export default class MessageSend extends React.Component {
           <strong>Welcome to the board of messages ! </strong>
         </h3>
         <h5 className="card-header info-color white-text text-center py-4">
-          <strong>Fowl Language will be punished by a ban !</strong>
+          <strong>Fowl language is punishable by a ban !</strong>
         </h5>
         <div>{this.state.error}</div>
         <div>
           <form onSubmit={this.handleSubmit}>
-            <div className="row">
+            <div className="form-group">
               <input
                 type="text"
                 className="form-control"
                 placeholder="Name"
-                onChange={this.handleNameChange}
+                onChange={this.handleNameChange} //Take in input to send to post request for content
                 value={this.state.name}
               />
             </div>
 
             <div className="form-group">
-              <input
-                type="text"
-                className="form-control"
+              <textarea
+                class="form-control"
+                rows="5"
+                id="comment"
                 placeholder="Content"
-                onChange={this.handleContentChange}
+                onChange={this.handleContentChange} //Take in input to send to post request for content
                 value={this.state.content}
               />
               <button
